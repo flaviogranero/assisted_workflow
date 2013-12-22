@@ -1,6 +1,7 @@
 # Aka
 
 A CLI tool to automate Inaka Workflow tasks.
+[https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow](Inaka Workflow)
 
 ## Installation
 
@@ -27,3 +28,13 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Development
+
+1. use ruby 1.9.3
+
+#### Inspiration
+
+https://github.com/ddollar/foreman
+https://github.com/github/hub
+https://github.com/schacon/git-pulls

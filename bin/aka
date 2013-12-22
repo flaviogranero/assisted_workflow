@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 
-require 'thor'
-require 'aka'
+# resolve bin path, ignoring symlinks
+require "pathname"
+bin_file = Pathname.new(__FILE__).realpath
+
+$:.unshift File.expand_path("../../lib", bin_file)
+
+require "aka/runner"
 
 Aka::Runner.start
