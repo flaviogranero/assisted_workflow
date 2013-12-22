@@ -33,6 +33,12 @@ TODO: Write usage instructions here
 
 1. use ruby 1.9.3
 
+## To-do
+
+1. load local config values from .akaconfig file
+2. merge local config with global config file
+3. allow individual tasks like pivotal:start, github:submit, freckle:log
+
 #### Inspiration
 
 https://github.com/ddollar/foreman

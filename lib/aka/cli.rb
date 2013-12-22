@@ -2,7 +2,7 @@ require "aka"
 require "yaml"
 require "thor"
 
-class Aka::Runner < Thor
+class Aka::CLI < Thor
   map ["-v", "--version"] => :version
   
   desc "setup", "Setup aka configuration in current project directory"
@@ -20,11 +20,17 @@ class Aka::Runner < Thor
     story = pivotal.find_story(story_id)
     if story.nil?
       stories = pivotal.pending_stories
-      output.show_stories(stories)
+      print_title "pending stories"
+      print_table(pivotal.display_values(stories))
+      say "start one story using:", :green
+      say "\t$ aka start [STORY_ID]"
     else
+      say "starting story: #{story.name}", :green
       pivotal.start_story(story)
       git.create_story_branch
     end
+  rescue Exception => e
+    print_error_and_exit e
   end
   
   desc "finish", "Finish the current story and creates a new pull request"
@@ -48,6 +54,10 @@ class Aka::Runner < Thor
   end
   
   no_tasks do
+    def pivotal
+      @pivotal ||= Aka::Pivotal.new(config[:pivotal])
+    end
+    
     # def engine
     #   @engine ||= begin
     #     engine_class = Foreman::Engine::CLI
@@ -58,14 +68,21 @@ class Aka::Runner < Thor
   end
   
   private ######################################################################
-
-    def error(message)
-      puts "ERROR: #{message}"
+  
+    def print_title(title)
+      say "-" * title.length, :green
+      say title.upcase, :green
+      say "-" * title.length, :green
+      
+    end
+    
+    def print_error_and_exit(exception)
+      say exception.message, :red
       exit 1
     end
 
     def check_akafile!
-      error("#{akafile} does not exist.") unless File.exist?(procfile)
+      error("#{akafile} does not exist.") unless File.exist?(akafile)
     end
 
     def akafile
@@ -76,11 +93,23 @@ class Aka::Runner < Thor
       end
     end
 
-    def options
-      original_options = super
-      return original_options unless File.exists?(".akaconfig")
-      defaults = ::YAML::load_file(".akaconfig") || {}
-      Thor::CoreExt::HashWithIndifferentAccess.new(defaults.merge(original_options))
+    def config
+      @config ||= begin
+        local_config = if File.exists?(".akaconfig")
+           ::YAML::load_file(".akaconfig")
+         else
+           {}
+         end
+        global_file = File.expand_path(".akaconfig", ENV["HOME"])
+        global_config = if File.exists?(global_file)
+          ::YAML::load_file(global_file)
+        else
+          {}
+        end
+        Thor::CoreExt::HashWithIndifferentAccess.new(
+          global_config.merge(local_config)
+        )
+      end
     end
   
 end
