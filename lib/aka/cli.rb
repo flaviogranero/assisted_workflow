@@ -29,7 +29,7 @@ class Aka::CLI < Thor
       pivotal.start_story(story)
       git.create_story_branch
     end
-  rescue Exception => e
+  rescue Aka::AkaError
     print_error_and_exit e
   end
   
@@ -109,6 +109,8 @@ class Aka::CLI < Thor
         Thor::CoreExt::HashWithIndifferentAccess.new(
           global_config.merge(local_config)
         )
+      rescue TypeError
+        raise Aka::AkaError, "Error on loading .akaconfig file. Please check the content format."
       end
     end
   

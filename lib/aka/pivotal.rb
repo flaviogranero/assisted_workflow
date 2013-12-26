@@ -1,3 +1,4 @@
+require "aka/exceptions"
 require 'pivotal_tracker'
 
 # wrapper class to pivotal api client
@@ -40,10 +41,13 @@ class Aka::Pivotal
   private
   
   def validate_options!(options)
+    if options.nil? || options.empty?
+      raise Aka::AkaError, "pivotal missing configuration"
+    end
     required_keys = %w(username token project_id)
     missing_keys = required_keys - options.keys
     if missing_keys.size > 0
-      raise "pivotal missing configuration: #{missing_keys.inspect}"
+      raise Aka::AkaError, "pivotal missing configuration: #{missing_keys.inspect}"
     end
   end
 end
