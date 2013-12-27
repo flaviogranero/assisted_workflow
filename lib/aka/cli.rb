@@ -43,10 +43,10 @@ class Aka::CLI < Thor
       say "preparing local branch"
       git.rebase_and_push
       say "submiting the new pull request"
-      github.create_pull_request(git.repository, git.current_branch, story)
+      pr = github.create_pull_request(git.repository, git.current_branch, story)
       say "finishing the story"
       pivotal.finish_story(story)
-      say "ok.", :green
+      say "new pull request: #{pr._links.html.href}", :green
     else
       print_error_and_exit "story not found, make sure a story branch in active"
     end
