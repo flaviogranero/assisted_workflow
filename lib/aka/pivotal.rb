@@ -24,6 +24,10 @@ class Aka::Pivotal
     story.update(:current_state => "started") if story
   end
   
+  def finish_story(story)
+    story.update(:current_state => finished_state(story)) if story
+  end
+  
   def pending_stories
     @project.stories.all(:state => "unstarted", :owned_by => @username, :limit => 5)
   end
@@ -48,6 +52,14 @@ class Aka::Pivotal
     missing_keys = required_keys - options.keys
     if missing_keys.size > 0
       raise Aka::AkaError, "pivotal missing configuration: #{missing_keys.inspect}"
+    end
+  end
+  
+  def finished_state(story)
+    if story.story_type == "chore"
+      "accepted"
+    else
+      "finished"
     end
   end
 end

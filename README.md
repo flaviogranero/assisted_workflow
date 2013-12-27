@@ -16,10 +16,28 @@ And then execute:
 Or install it yourself as:
 
     $ gem install aka
+    
+Or, if you are using homebrew and want to make aka system wide avaliable, use brew-gem:
 
-## Usage
+    $ brew install brew-gem
+    $ brew gem aka
+
+## Initial Setup
 
 TODO: Write usage instructions here
+
+##Requirements
+
+`aka` assumes you're using an 'origin' remote.  If you are not,
+either add an 'origin' remote that points to the GitHub repository you want to submit pull requests.
+
+##Private repositories
+
+To submit pull requests for your private repositories you have set up your aka config for github
+
+    $ aka config --global github.token your_githubtoken123456789
+
+You must generate your OAuth token for command line use, see how to [generate oauth token](https://help.github.com/articles/creating-an-oauth-token-for-command-line-use).
 
 ## Contributing
 
@@ -35,8 +53,8 @@ TODO: Write usage instructions here
 
 ## To-do
 
-1. load local config values from .akaconfig file
-2. merge local config with global config file
+1. setup task to check global and local configs
+2. setup installing a git-hook to include story id in commit message
 3. allow individual tasks like pivotal:start, github:submit, freckle:log
 
 #### Inspiration

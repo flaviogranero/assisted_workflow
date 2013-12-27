@@ -25,23 +25,37 @@ class Aka::CLI < Thor
       say "start one story using:", :green
       say "\t$ aka start [STORY_ID]"
     else
-      say "starting story: #{story.name}", :green
-      pivotal.start_story(story)
+      say "starting story: #{story.name}"
       git.create_story_branch
+      pivotal.start_story(story)
+      say "ok.", :green
     end
-  rescue Aka::AkaError
+  rescue Aka::AkaError => e
+    print_error_and_exit e.message
+  end
+  
+  desc "submit", "Submits the current story creating a new pull request"
+  def submit
+    story_id = git.current_story_id
+    say "loading story info"
+    story = pivotal.find_story(story_id)
+    if story
+      say "preparing local branch"
+      git.rebase_and_push
+      say "submiting the new pull request"
+      github.create_pull_request(git.repository, git.current_branch, story)
+      say "finishing the story"
+      pivotal.finish_story(story)
+      say "ok.", :green
+    else
+      print_error_and_exit "story not found, make sure a story branch in active"
+    end
+  rescue Aka::AkaError => e
     print_error_and_exit e
   end
   
-  desc "finish", "Finish the current story and creates a new pull request"
+  desc "finish", "Check if the changes are merged into master, removing the current branch"
   def finish
-    story = git.current_story
-    github.create_pull_request(story)
-    pivotal.finish_story(story)
-  end
-  
-  desc "complete", "Check if the changes are merged into master, removing the current branch"
-  def complete
     # TODO: check if current branch is merged into master, delete the branch
     if git.is_merged?
       git.remove_branch
@@ -58,13 +72,13 @@ class Aka::CLI < Thor
       @pivotal ||= Aka::Pivotal.new(config[:pivotal])
     end
     
-    # def engine
-    #   @engine ||= begin
-    #     engine_class = Foreman::Engine::CLI
-    #     engine = engine_class.new(options)
-    #     engine
-    #   end
-    # end
+    def git
+      @git ||= Aka::Git.new
+    end
+    
+    def github
+      @github ||= Aka::Github.new(config[:github])
+    end
   end
   
   private ######################################################################
@@ -76,8 +90,8 @@ class Aka::CLI < Thor
       
     end
     
-    def print_error_and_exit(exception)
-      say exception.message, :red
+    def print_error_and_exit(message)
+      say message, :red
       exit 1
     end
 
