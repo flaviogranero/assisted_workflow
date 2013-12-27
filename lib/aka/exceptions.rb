@@ -1,4 +1,4 @@
 module Aka
-  class AkaError < RuntimeError; end
-    
+  class Error < StandardError
+  end
 end

@@ -13,6 +13,7 @@ class Aka::CLI < Thor
     else
       # TODO: generate the .aka file in current directory, with project config
     end
+    say "pending", :yellow
   end
   
   desc "start [STORY_ID]", "Start the pivotal story and create a new branch to receive the changes"
@@ -30,8 +31,6 @@ class Aka::CLI < Thor
       pivotal.start_story(story)
       say "ok.", :green
     end
-  rescue Aka::AkaError => e
-    print_error_and_exit e.message
   end
   
   desc "submit", "Submits the current story creating a new pull request"
@@ -48,14 +47,13 @@ class Aka::CLI < Thor
       pivotal.finish_story(story)
       say "new pull request: #{pr._links.html.href}", :green
     else
-      print_error_and_exit "story not found, make sure a story branch in active"
+      raise Aka::Error, "story not found, make sure a story branch in active"
     end
-  rescue Aka::AkaError => e
-    print_error_and_exit e
   end
   
   desc "finish", "Check if the changes are merged into master, removing the current branch"
   def finish
+    say "pending", :yellow
     # TODO: check if current branch is merged into master, delete the branch
     if git.is_merged?
       git.remove_branch
@@ -79,6 +77,16 @@ class Aka::CLI < Thor
     def github
       @github ||= Aka::Github.new(config[:github])
     end
+    
+  end
+  
+  class << self
+    def start(given_args=ARGV, config={})
+      super
+    rescue Aka::Error => e
+      config[:shell].say e.message, :red
+      exit(1)
+    end
   end
   
   private ######################################################################
@@ -90,11 +98,6 @@ class Aka::CLI < Thor
       
     end
     
-    def print_error_and_exit(message)
-      say message, :red
-      exit 1
-    end
-
     def check_akafile!
       error("#{akafile} does not exist.") unless File.exist?(akafile)
     end
@@ -124,7 +127,7 @@ class Aka::CLI < Thor
           global_config.merge(local_config)
         )
       rescue TypeError
-        raise Aka::AkaError, "Error on loading .akaconfig file. Please check the content format."
+        raise Aka::Error, "Error on loading .akaconfig file. Please check the content format."
       end
     end
   

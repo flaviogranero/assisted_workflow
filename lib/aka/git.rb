@@ -2,7 +2,7 @@ require "aka/exceptions"
 
 module Aka
   
-  class GitError < AkaError; end
+  class GitError < Error; end
   
   class Git
     
@@ -28,7 +28,7 @@ module Aka
         git "rebase master"
         git "push -u -f origin #{branch}"
       else
-        raise Aka::AkaError, "git: there are not commited changes"
+        raise Aka::Error, "git: there are not commited changes"
       end
     end
     

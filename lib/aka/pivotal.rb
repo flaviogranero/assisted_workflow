@@ -52,12 +52,12 @@ class Aka::Pivotal
   
   def validate_options!(options)
     if options.nil? || options.empty?
-      raise Aka::AkaError, "pivotal missing configuration"
+      raise Aka::Error, "pivotal missing configuration"
     end
     required_keys = %w(fullname token project_id)
     missing_keys = required_keys - options.keys
     if missing_keys.size > 0
-      raise Aka::AkaError, "pivotal missing configuration: #{missing_keys.inspect}"
+      raise Aka::Error, "pivotal missing configuration: #{missing_keys.inspect}"
     end
   end
   
