@@ -1,6 +1,7 @@
 # Aka
 
 A CLI tool to automate Inaka Workflow tasks.
+
 [https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow](Inaka Workflow)
 
 ## Installation
@@ -47,10 +48,6 @@ You must generate your OAuth token for command line use, see how to [generate oa
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Development
-
-1. use ruby 1.9.3
-
 ## To-do
 
 1. setup task to check global and local configs
@@ -59,6 +56,6 @@ You must generate your OAuth token for command line use, see how to [generate oa
 
 #### Inspiration
 
-https://github.com/ddollar/foreman
-https://github.com/github/hub
-https://github.com/schacon/git-pulls
+1. https://github.com/ddollar/foreman
+2. https://github.com/github/hub
+3. https://github.com/schacon/git-pulls
