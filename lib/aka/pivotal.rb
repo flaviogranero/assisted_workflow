@@ -11,13 +11,19 @@ class Aka::Pivotal
     begin
       @project = PivotalTracker::Project.find(options["project_id"])
     rescue
-      raise "pivotal project #{options["project_id"]} not found."
+      raise Aka::Error, "pivotal project #{options["project_id"]} not found."
     end
+    @fullname = options["fullname"]
     @username = options["username"]
   end
   
   def find_story(story_id)
-    @project.stories.find(story_id) if story_id.to_i > 0
+    if story_id.to_i > 0
+      story = @project.stories.find(story_id)
+      story.other_id = @username || @fullname
+      story.other_id = story.other_id.to_s.downcase.split.join
+      story
+    end
   end
   
   def start_story(story)
@@ -48,7 +54,7 @@ class Aka::Pivotal
     if options.nil? || options.empty?
       raise Aka::AkaError, "pivotal missing configuration"
     end
-    required_keys = %w(username token project_id)
+    required_keys = %w(fullname token project_id)
     missing_keys = required_keys - options.keys
     if missing_keys.size > 0
       raise Aka::AkaError, "pivotal missing configuration: #{missing_keys.inspect}"
