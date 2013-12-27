@@ -6,7 +6,7 @@ module Aka
   class Github
     def initialize(options)
       validate_options!(options)
-      @client = Octokit::Client.new(:access_token => options[:token])
+      @client = Octokit::Client.new(:access_token => options["token"])
     end
     
     # creates a pull request using current branch changes

@@ -21,11 +21,15 @@ module Aka
     # run all the git steps required for a clean pull request
     def rebase_and_push
       branch = current_branch
-      git "checkout master"
-      git "pull --rebase"
-      git "checkout #{branch}"
-      git "rebase master"
-      git "push -u origin #{branch} -f"
+      if not_commited_changes.empty?
+        git "checkout master"
+        git "pull --rebase"
+        git "checkout #{branch}"
+        git "rebase master"
+        git "push -u -f origin #{branch}"
+      else
+        raise Aka::AkaError, "git: there are not commited changes"
+      end
     end
     
     # returns the current story id based on branch name
@@ -49,7 +53,7 @@ module Aka
     
     def git(command, options = {})
       puts "git #{command}" unless options[:silent] == true
-      result = %x{git #{command}}
+      result = %x{git #{command}}.chomp
       unless $? == 0
         msg = ["git command error", options[:error]].compact.join(": ")
         raise GitError, msg
@@ -60,6 +64,10 @@ module Aka
     def branch_name(story)
       description = story.name.to_s.downcase.gsub(/\W/, "_").slice(0, DESCRIPTION_LIMIT)
       [story.other_id, story.id, description].join(".").downcase
+    end
+    
+    def not_commited_changes
+      git("status --porcelain", :silent => true).split("\n")
     end
   end
 end
