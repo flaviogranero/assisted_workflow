@@ -25,8 +25,8 @@ class Aka::CLI < Thor
       say "start one story using:", :green
       say "\t$ aka start [STORY_ID]"
     else
+      git.create_story_branch(story)
       say "starting story: #{story.name}"
-      git.create_story_branch
       pivotal.start_story(story)
       say "ok.", :green
     end
