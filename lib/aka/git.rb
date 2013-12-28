@@ -50,18 +50,17 @@ module Aka
     def is_merged?
       check_everything_commited!
       branch = current_branch
-      git "checkout master"
       git "pull --rebase"
-      merged = git("branch --merged").split("\n").include?(branch)
-      git "checkout #{branch}"
-      merged
+      git("branch -a --merged").include?(branch)
     end
     
     # removes current branch and his remote version
     def remove_branch
       branch = current_branch
       git "push origin :#{branch}"
+      git "checkout master"
       git "branch -D #{branch}"
+      git "pull --rebase"
     end
     
     private
