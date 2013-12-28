@@ -20,16 +20,13 @@ module Aka
     
     # run all the git steps required for a clean pull request
     def rebase_and_push
+      check_everything_commited!
       branch = current_branch
-      if not_commited_changes.empty?
-        git "checkout master"
-        git "pull --rebase"
-        git "checkout #{branch}"
-        git "rebase master"
-        git "push -u -f origin #{branch}"
-      else
-        raise Aka::Error, "git: there are not commited changes"
-      end
+      git "checkout master"
+      git "pull --rebase"
+      git "checkout #{branch}"
+      git "rebase master"
+      git "push -u -f origin #{branch}"
     end
     
     # returns the current story id based on branch name
@@ -47,6 +44,24 @@ module Aka
     def repository
       url = git("config --get remote.origin.url", :error => "cannot find 'origin' remote repository url")
       url.gsub("git@github.com:", "").gsub("https://github.com/", "").gsub(/\.git$/, "").chomp
+    end
+    
+    # check if current branch is merged into master
+    def is_merged?
+      check_everything_commited!
+      branch = current_branch
+      git "checkout master"
+      git "pull --rebase"
+      merged = git("branch --merged").split("\n").include?(branch)
+      git "checkout #{branch}"
+      merged
+    end
+    
+    # removes current branch and his remote version
+    def remove_branch
+      branch = current_branch
+      git "push origin :#{branch}"
+      git "branch -D #{branch}"
     end
     
     private
@@ -68,6 +83,10 @@ module Aka
     
     def not_commited_changes
       git("status --porcelain", :silent => true).split("\n")
+    end
+    
+    def check_everything_commited!
+      raise Aka::Error, "git: there are not commited changes" unless not_commited_changes.empty?
     end
   end
 end
