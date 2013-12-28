@@ -51,9 +51,7 @@ module Aka
       check_everything_commited!
       branch = current_branch
       git "pull --rebase"
-      merged = git("branch -a --merged").include?(branch)
-      git "checkout #{branch}"
-      merged
+      git("branch -a --merged").include?(branch)
     end
     
     # removes current branch and his remote version
