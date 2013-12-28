@@ -52,7 +52,7 @@ module Aka
       branch = current_branch
       git "checkout master"
       git "pull --rebase"
-      merged = git("branch --merged").split("\n").include?(branch)
+      merged = git("branch --merged").include?(branch)
       git "checkout #{branch}"
       merged
     end
@@ -61,7 +61,9 @@ module Aka
     def remove_branch
       branch = current_branch
       git "push origin :#{branch}"
+      git "checkout master"
       git "branch -D #{branch}"
+      git "pull --rebase"
     end
     
     private
