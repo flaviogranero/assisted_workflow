@@ -23,13 +23,15 @@ class Aka::CLI < Thor
       stories = pivotal.pending_stories
       print_title "pending stories"
       print_table(pivotal.display_values(stories))
-      say "start one story using:", :green
+      say "start a story using:", :green
       say "\t$ aka start [STORY_ID]"
     else
+      say "creating the feature branch"
       git.create_story_branch(story)
       say "starting story: #{story.name}"
       pivotal.start_story(story)
-      say "ok.", :green
+      say "after commiting your changes, submit a pull request using:", :green
+      say "\t$ aka submit"
     end
   end
   
@@ -45,24 +47,34 @@ class Aka::CLI < Thor
       pr = github.create_pull_request(git.repository, git.current_branch, story)
       say "finishing the story"
       pivotal.finish_story(story)
-      say "new pull request: #{pr._links.html.href}", :green
+      say "new pull request: #{pr._links.html.href}", :yellow
+      say "after pull request approval, remove the feature branch using:", :green
+      say "\t$aka finish"
     else
-      raise Aka::Error, "story not found, make sure a story branch in active"
+      raise Aka::Error, "story not found, make sure a feature branch in active"
     end
   end
   
-  desc "finish", "Check if the changes are merged into master, removing the current branch"
+  desc "finish", "Check if the changes are merged into master, removing the current feature branch"
   def finish
-    say "pending", :yellow
-    # TODO: check if current branch is merged into master, delete the branch
-    if git.is_merged?
-      git.remove_branch
+    story_id = git.current_story_id
+    if story_id.to_i > 0
+      if git.is_merged?
+        say "removing local and remote feature branches"
+        git.remove_branch
+        say "well done! check out you next stories using:", :green
+        say "\t$ aka start"
+      else
+        say "this branch is not merged into master yet", :yellow
+      end
+    else
+      raise Aka::Error, "story not found, make sure a feature branch in active"
     end
   end
   
   desc "version", "Display Aka gem version"
   def version
-    puts Aka::VERSION
+    say Aka::VERSION
   end
   
   no_tasks do
