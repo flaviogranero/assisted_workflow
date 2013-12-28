@@ -62,7 +62,7 @@ class Aka::CLI < Thor
       if git.is_merged?
         say "removing local and remote feature branches"
         git.remove_branch
-        say "well done! check out you next stories using:", :green
+        say "well done! check your next stories using:", :green
         say "\t$ aka start"
       else
         say "this branch is not merged into master yet", :yellow

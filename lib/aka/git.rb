@@ -50,8 +50,9 @@ module Aka
     def is_merged?
       check_everything_commited!
       branch = current_branch
+      git "checkout master"
       git "pull --rebase"
-      merged = git("branch -a --merged").include?(branch)
+      merged = git("branch --merged").include?(branch)
       git "checkout #{branch}"
       merged
     end
