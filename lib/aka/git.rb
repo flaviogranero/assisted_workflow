@@ -63,7 +63,6 @@ module Aka
       git "push origin :#{branch}"
       git "checkout master"
       git "branch -D #{branch}"
-      git "pull --rebase"
     end
     
     private
