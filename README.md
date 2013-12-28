@@ -1,8 +1,9 @@
 # Aka
 
-A CLI tool to automate Inaka Workflow tasks.
+A CLI tool to automate software development workflows based on github pull requests.
 
-[https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow](Inaka Workflow)
+* [Inaka Workflow](https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow)
+* [Github Workflow](http://scottchacon.com/2011/08/31/github-flow.html)
 
 ## Installation
 
