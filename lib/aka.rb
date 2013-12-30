@@ -1,11 +1,9 @@
 require "aka/version"
 require "aka/exceptions"
-require "aka/config_file"
-require "aka/pivotal"
-require "aka/git"
-require "aka/github"
-require "aka/cli"
 
 module Aka
-  
+  autoload :Pivotal,    "aka/pivotal"
+  autoload :Git,        "aka/git"
+  autoload :Github,     "aka/github"
+  autoload :ConfigFile, "aka/config_file"
 end
