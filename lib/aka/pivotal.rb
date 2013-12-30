@@ -1,8 +1,6 @@
 require "aka/exceptions"
 require 'pivotal_tracker'
 
-puts "pivotal class loaded"
-
 # wrapper class to pivotal api client
 class Aka::Pivotal
   
