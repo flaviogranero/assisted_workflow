@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "thor", "~> 0.18.1"
   gem.add_dependency "pivotal-tracker", "~> 0.5.12"
   gem.add_dependency "octokit", "~> 2.0"
+  gem.add_dependency "hashie", "~> 2.0.5"
   
   gem.description   = <<desc
   `aka` is a command line utility to automate Inaka Workflow tasks.

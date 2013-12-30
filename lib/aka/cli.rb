@@ -5,19 +5,14 @@ require "thor"
 class Aka::CLI < Thor
   map ["-v", "--version"] => :version
   
-  desc "setup", "Setup aka configuration in current project directory"
-  method_option :global, :type => :boolean, :aliases => "-g", :desc => "Setup aka global configuration (for all projects)"
-  def setup
-    if options[:global]
-      # TODO: generate the global .aka file in home directory
-    else
-      # TODO: generate the .aka file in current directory, with project config
-    end
+  desc "init", "Setup aka initial configuration in current project directory"
+  def init
     say "pending", :yellow
   end
   
   desc "start [STORY_ID]", "Start the pivotal story and create a new branch to receive the changes"
   def start(story_id=nil)
+    check_akafile!
     story = pivotal.find_story(story_id)
     if story.nil?
       stories = pivotal.pending_stories
@@ -37,6 +32,7 @@ class Aka::CLI < Thor
   
   desc "submit", "Submits the current story creating a new pull request"
   def submit
+    check_akafile!
     story_id = git.current_story_id
     say "loading story info"
     story = pivotal.find_story(story_id)
@@ -57,6 +53,7 @@ class Aka::CLI < Thor
   
   desc "finish", "Check if the changes are merged into master, removing the current feature branch"
   def finish
+    check_akafile!
     story_id = git.current_story_id
     if story_id.to_i > 0
       if git.is_merged?
@@ -77,9 +74,19 @@ class Aka::CLI < Thor
     say Aka::VERSION
   end
   
+  desc "config group.key=value", "Set configuration keys in local config file"
+  method_option :global, :type => :boolean, :aliases => "-g", :desc => "Set configuration key in global configuration file (for all projects)"
+  def config(*args)
+    if args.empty?
+      print_table configuration.to_hash
+    else
+      config_file.parse(args).save!
+    end
+  end
+  
   no_tasks do
     def pivotal
-      @pivotal ||= Aka::Pivotal.new(config[:pivotal])
+      @pivotal ||= Aka::Pivotal.new(configuration[:pivotal])
     end
     
     def git
@@ -87,9 +94,22 @@ class Aka::CLI < Thor
     end
     
     def github
-      @github ||= Aka::Github.new(config[:github])
+      @github ||= Aka::Github.new(configuration[:github])
     end
     
+    def config_file
+      @config_file ||= Aka::ConfigFile.new(akafile)
+    end
+    
+    # loads all configuration, merging global and local values
+    def configuration
+      @configuration ||= begin
+        Aka::ConfigFile.new(File.expand_path(".akaconfig", ENV["HOME"])).
+          merge_file(".akaconfig")
+      rescue TypeError
+        raise Aka::Error, "Error on loading .akaconfig files. Please check the content format."
+      end
+    end
   end
   
   class << self
@@ -107,40 +127,17 @@ class Aka::CLI < Thor
       say "-" * title.length, :green
       say title.upcase, :green
       say "-" * title.length, :green
-      
     end
     
     def check_akafile!
-      error("#{akafile} does not exist.") unless File.exist?(akafile)
+      raise Aka::Error, "#{akafile} does not exist.\nmake sure you run `$ aka init` in your project folder." unless File.exist?(akafile)
     end
 
     def akafile
       case
         when options[:akafile] then options[:akafile]
-        when options[:root]     then File.expand_path(File.join(options[:root], ".akaconfig"))
+        when options[:global] then File.expand_path(".akaconfig", ENV["HOME"])
         else ".akaconfig"
       end
     end
-
-    def config
-      @config ||= begin
-        local_config = if File.exists?(".akaconfig")
-           ::YAML::load_file(".akaconfig")
-         else
-           {}
-         end
-        global_file = File.expand_path(".akaconfig", ENV["HOME"])
-        global_config = if File.exists?(global_file)
-          ::YAML::load_file(global_file)
-        else
-          {}
-        end
-        Thor::CoreExt::HashWithIndifferentAccess.new(
-          global_config.merge(local_config)
-        )
-      rescue TypeError
-        raise Aka::Error, "Error on loading .akaconfig file. Please check the content format."
-      end
-    end
-  
 end
