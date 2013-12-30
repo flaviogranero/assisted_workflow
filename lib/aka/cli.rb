@@ -3,11 +3,28 @@ require "yaml"
 require "thor"
 
 class Aka::CLI < Thor
+  include Thor::Actions
+  GLOBAL_CONFIG = File.expand_path(".akaconfig", ENV["HOME"])
+  LOCAL_CONFIG = ".akaconfig"
+  source_root(File.expand_path(File.join(__FILE__, "..", "templates")))
+  
   map ["-v", "--version"] => :version
   
   desc "init", "Setup aka initial configuration in current project directory"
   def init
-    say "pending", :yellow
+    # if !File.exists?(".akafile")
+    copy_file "akaconfig.global.tt", GLOBAL_CONFIG
+    copy_file "akaconfig.local.tt", LOCAL_CONFIG
+    if File.exists?(".git")
+      copy_file "commit-msg.tt", ".git/hooks/commit-msg"
+    else
+      raise Aka::Error, ".git folder not found"
+    end
+    say "set your own configuration editing the .akaconfig files or running:", :green
+    say "\t$ aka config pivotal.fullname='Flavio Granero' --global"
+    say "\t$ aka config pivotal.token=MYPIVOTALTOKEN --global"
+    say "\t$ aka config github.token=MYGITHUBOAUTHTOKEN --global"
+    say "\t$ aka config pivotal.project_id=00001"
   end
   
   desc "start [STORY_ID]", "Start the pivotal story and create a new branch to receive the changes"
@@ -104,8 +121,7 @@ class Aka::CLI < Thor
     # loads all configuration, merging global and local values
     def configuration
       @configuration ||= begin
-        Aka::ConfigFile.new(File.expand_path(".akaconfig", ENV["HOME"])).
-          merge_file(".akaconfig")
+        Aka::ConfigFile.new(GLOBAL_CONFIG).merge_file(LOCAL_CONFIG)
       rescue TypeError
         raise Aka::Error, "Error on loading .akaconfig files. Please check the content format."
       end
@@ -136,8 +152,8 @@ class Aka::CLI < Thor
     def akafile
       case
         when options[:akafile] then options[:akafile]
-        when options[:global] then File.expand_path(".akaconfig", ENV["HOME"])
-        else ".akaconfig"
+        when options[:global] then GLOBAL_CONFIG
+        else LOCAL_CONFIG
       end
     end
 end

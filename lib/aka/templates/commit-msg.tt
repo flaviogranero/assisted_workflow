@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# This hook script will automatically add the Pivotal Tracker ID
+# to the beginning of the git commit message (in the format of
+# [#12345678]) if it is not already there.
+#
+# The script pulls the ID from the beginning of the branch name.  If
+# the branch name does not start with the Pivotal Tracker ID, then
+# this script will do nothing.
+#
+# Specifying the Pivotal Tracker ID in the git commit message allows
+# Pivotal to list all commits associated with a story when the
+# story is viewed.
+#
+# To enable this script, copy it into your repo's .git/hooks directory.
+#
+
+COMMIT_MSG_FILE=$1
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+TRACKER_ID=`echo $CURRENT_BRANCH | awk -F\. '{print $2}'`
+
+# Make sure the branch name starts with what looks like a tracker ID
+if [ "$TRACKER_ID" != "" ]; then
+
+  # If we could not find the tracker ID in the commit message in the
+  # proper format, then add it.
+  grep -q "\[#$TRACKER_ID\]" $COMMIT_MSG_FILE
+  if [ $? -eq 1 ]; then
+    sed "1s/^/[#$TRACKER_ID] /" $COMMIT_MSG_FILE > /tmp/tracker_git_commit_msg
+    mv /tmp/tracker_git_commit_msg $COMMIT_MSG_FILE
+  fi
+fi
+
+# Explicitly exit 0 to make sure we don't accidentally abort the commit
+exit 0
+
