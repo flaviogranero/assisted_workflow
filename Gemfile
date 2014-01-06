@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in aka.gemspec
+# Specify your gem's dependencies in assisted_workflow.gemspec
 gemspec
