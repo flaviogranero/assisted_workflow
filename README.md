@@ -30,11 +30,6 @@ Or install it yourself as:
 
     $ gem install assisted_workflow
     
-Or, if you are using homebrew and want to make `aw` system wide available, use brew-gem:
-
-    $ brew install brew-gem
-    $ brew gem assisted_workflow
-
 ## Initial Setup
 
 TODO: Write initial setup instructions here

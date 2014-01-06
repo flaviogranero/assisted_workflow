@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Flavio Granero"]
   gem.email         = ["maltempe@gmail.com"]
   gem.summary       = %q{AW is a CLI tool to automate software development workflows based on github pull requests}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/flaviogranero/assisted_workflow"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
@@ -25,19 +25,6 @@ Gem::Specification.new do |gem|
   
   gem.description   = <<desc
   `aw` is a command line tool to automate software development workflows based on github pull requests.
-  
-  Initial Setup:
-  
-    $ aw setup
-
-  Usage:
-
-      $ aw start
-      
-      $ aw submit
-      
-      $ aw finish
-  
 desc
 
   gem.post_install_message = <<-message
@@ -82,10 +69,13 @@ desc
       `.//-...----------------..............----------------------------..---/oo
 
 
-        AW, Thanks!
-        ===========
+        AW, thanks for installing Assisted Workflow!
+        ============================================
 
-       Use the provided `aw` command-line tool to start a task creating a feature branch, submit a pull request with the changes and finish a task, keeping your repository clean. For more details, search for Inaka Workflow description.
+       Use the provided `aw` command-line tool to start a task creating a feature branch, submit a pull request with the changes and finish a task, keeping your repository clean. For more details, search for Inaka Workflow description. 
+       Now, go to your project folder and start using it with:
+       
+       $ aw setup
 
        Cheers,
        Flavio
