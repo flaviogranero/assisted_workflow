@@ -1,6 +1,6 @@
-require "aka/exceptions"
+require "assisted_workflow/exceptions"
 
-module Aka
+module AssistedWorkflow
   
   class GitError < Error; end
   
@@ -87,7 +87,7 @@ module Aka
     end
     
     def check_everything_commited!
-      raise Aka::Error, "git: there are not commited changes" unless not_commited_changes.empty?
+      raise AssistedWorkflow::Error, "git: there are not commited changes" unless not_commited_changes.empty?
     end
   end
 end

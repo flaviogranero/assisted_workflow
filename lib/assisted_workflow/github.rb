@@ -1,7 +1,7 @@
-require "aka/exceptions"
+require "assisted_workflow/exceptions"
 require "octokit"
 
-module Aka
+module AssistedWorkflow
   
   class Github
     def initialize(options)
@@ -15,7 +15,7 @@ module Aka
       title = "[##{story.id}] #{story.name}"
       pull_request = @client.create_pull_request(repo, base, branch, title, story.description)
       if pull_request.nil?
-        raise Aka::Error, "error on submiting the pull request"
+        raise AssistedWorkflow::Error, "error on submiting the pull request"
       else
         pull_request
       end
@@ -25,12 +25,12 @@ module Aka
     
     def validate_options!(options)
       if options.nil? || options.empty?
-        raise Aka::Error, "github missing configuration"
+        raise AssistedWorkflow::Error, "github missing configuration"
       end
       required_keys = %w(token)
       missing_keys = required_keys - options.keys
       if missing_keys.size > 0
-        raise Aka::Error, "github missing configuration: #{missing_keys.inspect}"
+        raise AssistedWorkflow::Error, "github missing configuration: #{missing_keys.inspect}"
       end
     end
   end

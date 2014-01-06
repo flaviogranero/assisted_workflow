@@ -1,7 +1,7 @@
 require "hashie"
 require "yaml"
 
-module Aka
+module AssistedWorkflow
   # special hash class to allow configuration management
   class ConfigHash < Hash
     include Hashie::Extensions::MergeInitializer
@@ -28,7 +28,9 @@ module Aka
     
     # dumps the configuration values to a file in yaml format
     def save!
-      File.open(@akafile, 'w'){ |f| f.write(@hash.to_yaml) }
+      content = @hash.to_yaml
+      content.gsub! " !ruby/hash:AssistedWorkflow::ConfigHash", ""
+      File.open(@awfile, 'w'){ |f| f.write(content) }
     end
     
     def [](key)
@@ -46,10 +48,10 @@ module Aka
       self
     end
     
-    def initialize(akafile)
-      @akafile = akafile
-      @hash = if File.exists?(@akafile)
-        ConfigHash.new(::YAML::load_file(@akafile) || {})
+    def initialize(awfile)
+      @awfile = awfile
+      @hash = if File.exists?(@awfile)
+        ConfigHash.new(::YAML::load_file(@awfile) || {})
       else
         ConfigHash.new
       end
