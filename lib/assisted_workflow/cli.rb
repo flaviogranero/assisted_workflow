@@ -62,7 +62,7 @@ class AssistedWorkflow::CLI < Thor
       say "submiting the new pull request"
       pr = github.create_pull_request(git.repository, git.current_branch, story)
       say "finishing the story"
-      pivotal.finish_story(story)
+      pivotal.finish_story(story, :note => pr._links.html.href)
       say "new pull request: #{pr._links.html.href}", :yellow
       say "after pull request approval, remove the feature branch using:", :green
       say_command "$ aw finish"
