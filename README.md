@@ -1,5 +1,7 @@
 # Assisted Workflow (aw)
 
+[![Gem Version](https://badge.fury.io/rb/assisted_workflow.png)](http://badge.fury.io/rb/assisted_workflow) [![Code Climate](https://codeclimate.com/github/flaviogranero/assisted_workflow.png)](https://codeclimate.com/github/flaviogranero/assisted_workflow)
+
 AW is a CLI tool to automate software development workflows based on github pull requests.
 
 * [Github Workflow](http://scottchacon.com/2011/08/31/github-flow.html)
