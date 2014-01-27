@@ -68,7 +68,7 @@ module AssistedWorkflow
     private
     
     def git(command, options = {})
-      options.merge! :raise_error => true
+      options = {:raise_error => true}.merge(options)
       puts "git #{command}" unless options[:silent] == true
       result = %x{git #{command}}.chomp
       if $? != 0 && options[:raise_error]
