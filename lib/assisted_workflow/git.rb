@@ -60,7 +60,7 @@ module AssistedWorkflow
     # removes current branch and his remote version
     def remove_branch
       branch = current_branch
-      git "push origin :#{branch}"
+      git "push origin :#{branch}", :raise_error => false
       git "checkout master"
       git "branch -D #{branch}"
     end
@@ -68,9 +68,10 @@ module AssistedWorkflow
     private
     
     def git(command, options = {})
+      options.merge! :raise_error => true
       puts "git #{command}" unless options[:silent] == true
       result = %x{git #{command}}.chomp
-      unless $? == 0
+      if $? != 0 && options[:raise_error]
         msg = ["git command error", options[:error]].compact.join(": ")
         raise GitError, msg
       end
