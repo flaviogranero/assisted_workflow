@@ -21,29 +21,32 @@ class AssistedWorkflow::CLI < Thor
       raise AssistedWorkflow::Error, ".git folder not found"
     end
     say "set your own configuration editing the .awconfig files or running:", :green
-    say "\t$ aw config pivotal.fullname='Flavio Granero' --global"
-    say "\t$ aw config pivotal.token=MYPIVOTALTOKEN --global"
-    say "\t$ aw config github.token=MYGITHUBOAUTHTOKEN --global"
-    say "\t$ aw config pivotal.project_id=00001"
+    say_command "$ aw config pivotal.fullname='Flavio Granero' --global"
+    say_command "$ aw config pivotal.token=MYPIVOTALTOKEN --global"
+    say_command "$ aw config github.token=MYGITHUBOAUTHTOKEN --global"
+    say_command "$ aw config pivotal.project_id=00001"
   end
   
   desc "start [STORY_ID]", "Start the pivotal story and create a new branch to receive the changes"
+  method_option :all, :type => :boolean, :default => false, :aliases => "-a", :desc => "Show started and pending stories when no story_id is provided"
+  method_option :estimate, :type => :numeric, :aliases => "-e", :desc => "Sets the story estimate when starting"
   def start(story_id=nil)
     check_awfile!
     story = pivotal.find_story(story_id)
     if story.nil?
-      stories = pivotal.pending_stories
+      stories = pivotal.pending_stories(:include_started => options[:all])
       print_title "pending stories"
-      print_table(pivotal.display_values(stories))
+      print_table(pivotal.display_values(stories, :show_state => options[:all]))
       say "start a story using:", :green
-      say "\t$ aw start [STORY_ID]"
+      say_command "$ aw start [STORY_ID]"
     else
+      say_status "starting story", story.name
+      pivotal.start_story(story, :estimate => options[:estimate])
+      print_wrapped story.description, :indent => 2
       say "creating the feature branch"
       git.create_story_branch(story)
-      say "starting story: #{story.name}"
-      pivotal.start_story(story)
       say "after commiting your changes, submit a pull request using:", :green
-      say "\t$ aw submit"
+      say_command "$ aw submit"
     end
   end
   
@@ -62,7 +65,7 @@ class AssistedWorkflow::CLI < Thor
       pivotal.finish_story(story)
       say "new pull request: #{pr._links.html.href}", :yellow
       say "after pull request approval, remove the feature branch using:", :green
-      say "\t$aw finish"
+      say_command "$ aw finish"
     else
       raise AssistedWorkflow::Error, "story not found, make sure a feature branch in active"
     end
@@ -77,7 +80,7 @@ class AssistedWorkflow::CLI < Thor
         say "removing local and remote feature branches"
         git.remove_branch
         say "well done! check your next stories using:", :green
-        say "\t$ aw start"
+        say_command "$ aw start"
       else
         say "this branch is not merged into master yet", :yellow
       end
@@ -143,6 +146,12 @@ class AssistedWorkflow::CLI < Thor
       say "-" * title.length, :green
       say title.upcase, :green
       say "-" * title.length, :green
+    end
+    
+    def say_command(command)
+      with_padding do
+        say command
+      end
     end
     
     def check_awfile!

@@ -27,21 +27,30 @@ module AssistedWorkflow
       end
     end
   
-    def start_story(story)
-      story.update(:current_state => "started") if story
+    def start_story(story, options = {})
+      if story
+        story.update(options.merge(:current_state => "started"))
+        raise AssistedWorkflow::Error, story.errors.first.to_s if story.errors.any?
+      end
     end
   
     def finish_story(story)
       story.update(:current_state => finished_state(story)) if story
     end
   
-    def pending_stories
-      @project.stories.all(:state => "unstarted", :owned_by => @username, :limit => 5)
+    def pending_stories(options = {})
+      states = ["unstarted"]
+      states << "started" if options[:include_started]
+      @project.stories.all(:state => states, :owned_by => @username, :limit => 5)
     end
   
-    def display_values(stories)
+    def display_values(stories, options = {})
       stories.map do |story|
-        [story.id, story.name]
+        if options[:show_state]
+          [story.id, story.current_state, story.name]
+        else
+          [story.id, story.estimate, story.name]
+        end
       end
     end
   
