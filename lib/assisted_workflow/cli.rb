@@ -16,6 +16,7 @@ class AssistedWorkflow::CLI < Thor
     copy_file "awconfig.local.tt", LOCAL_CONFIG
     if File.exists?(".git")
       copy_file "commit-msg.tt", ".git/hooks/commit-msg"
+      chmod ".git/hooks/commit-msg", "a+x"
     else
       raise AssistedWorkflow::Error, ".git folder not found"
     end
