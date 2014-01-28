@@ -1,5 +1,4 @@
 require "assisted_workflow"
-require "yaml"
 require "thor"
 
 class AssistedWorkflow::CLI < Thor
@@ -8,7 +7,11 @@ class AssistedWorkflow::CLI < Thor
   LOCAL_CONFIG = ".awconfig"
   source_root(File.expand_path(File.join(__FILE__, "..", "templates")))
   
+  # tasks shortcuts
   map ["-v", "--version"] => :version
+  map "s" => :start
+  map "u" => :submit
+  map "f" => :finish
   
   desc "setup", "Setup initial configuration in current project directory"
   def setup
