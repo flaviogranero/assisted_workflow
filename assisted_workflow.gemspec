@@ -18,6 +18,9 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.executables   = %w( aw )
   
+  gem.add_development_dependency "rr"
+  gem.add_development_dependency "fakefs"
+  
   gem.add_dependency "thor", "~> 0.18.1"
   gem.add_dependency "pivotal-tracker", "~> 0.5.12"
   gem.add_dependency "octokit", "~> 2.0"

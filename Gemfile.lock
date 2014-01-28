@@ -14,6 +14,7 @@ GEM
     builder (3.2.2)
     crack (0.4.1)
       safe_yaml (~> 0.9.0)
+    fakefs (0.5.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
     happymapper (0.4.1)
@@ -41,6 +42,7 @@ GEM
       rest-client (~> 1.6.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    rr (1.1.2)
     safe_yaml (0.9.7)
     sawyer (0.5.2)
       addressable (~> 2.3.5)
@@ -52,3 +54,5 @@ PLATFORMS
 
 DEPENDENCIES
   assisted_workflow!
+  fakefs
+  rr
