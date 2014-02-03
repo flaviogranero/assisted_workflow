@@ -40,29 +40,11 @@ module AssistedWorkflow
     def pending_stories(options = {})
       states = ["unstarted"]
       states << "started" if options[:include_started]
-      @project.stories.all(:state => states, :owned_by => @username, :limit => 5)
+      @project.stories.all(:state => states, :owned_by => @fullname, :limit => 5)
     end
     
-    def update_story!(story, attributes)
-      if story
-        story.update(attributes)
-        raise AssistedWorkflow::Error, story.errors.first.to_s if story.errors.any?
-        true
-      end
-    end
-  
-    def display_values(stories, options = {})
-      stories.map do |story|
-        if options[:show_state]
-          [story.id, story.current_state, story.name]
-        else
-          [story.id, story.estimate, story.name]
-        end
-      end
-    end
-  
     def valid?
-      @project.present?
+      !@project.nil?
     end
   
     private
@@ -83,6 +65,14 @@ module AssistedWorkflow
         "accepted"
       else
         "finished"
+      end
+    end
+    
+    def update_story!(story, attributes)
+      if story
+        story.update(attributes)
+        raise AssistedWorkflow::Error, story.errors.first.to_s if story.errors.any?
+        true
       end
     end
   end

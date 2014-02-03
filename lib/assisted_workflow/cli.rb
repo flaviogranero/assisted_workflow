@@ -39,7 +39,7 @@ class AssistedWorkflow::CLI < Thor
     if story.nil?
       stories = pivotal.pending_stories(:include_started => options[:all])
       print_title "pending stories"
-      print_table(pivotal.display_values(stories, :show_state => options[:all]))
+      print_stories(stories)
       say "start a story using:", :green
       say_command "$ aw start [STORY_ID]"
     else
@@ -149,6 +149,17 @@ class AssistedWorkflow::CLI < Thor
       say "-" * title.length, :green
       say title.upcase, :green
       say "-" * title.length, :green
+    end
+    
+    def print_stories(stories)
+      rows = stories.map do |story|
+        if options[:all]
+          [story.id, story.current_state, story.name]
+        else
+          [story.id, story.estimate, story.name]
+        end
+      end
+      print_table(rows)
     end
     
     def say_command(command)
