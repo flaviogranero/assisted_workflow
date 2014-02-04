@@ -46,7 +46,7 @@ describe AssistedWorkflow::Pivotal do
   end
   
   it "finds a story by id" do
-    stub(PivotalTracker::Story).find("100001", @project.id) do |story_id, project_id|
+    mock(PivotalTracker::Story).find("100001", @project.id) do |story_id, project_id|
       story_stub(:id => story_id, :project_id => project_id)
     end
     
@@ -56,7 +56,7 @@ describe AssistedWorkflow::Pivotal do
   end
   
   it "returns pending stories" do
-    stub(PivotalTracker::Story).all(@project, :state => ["unstarted", "started"], :owned_by => @configuration["fullname"], :limit => 5) do |project|
+    mock(PivotalTracker::Story).all(@project, :state => ["unstarted", "started"], :owned_by => @configuration["fullname"], :limit => 5) do |project|
       [
         story_stub(:id => "100001", :project_id => project.id),
         story_stub(:id => "100002", :project_id => project.id)

@@ -25,14 +25,14 @@ describe AssistedWorkflow::Github do
   end
   
   it "creates a new valid pull request" do
-    stub(@client).create_pull_request("flaviogranero/assisted_workflow", "master", "flavio.00001.new_feature", "[#00001] New Feature", "Feature description"){ true }
+    mock(@client).create_pull_request("flaviogranero/assisted_workflow", "master", "flavio.00001.new_feature", "[#00001] New Feature", "Feature description"){ true }
     @github.create_pull_request(
       "flaviogranero/assisted_workflow", "flavio.00001.new_feature", story
     )
   end
   
   it "raises on creating an invalid pull request" do
-    stub(@client).create_pull_request("flaviogranero/invalid_repo", "master", "flavio.00001.new_feature", "[#00001] New Feature", "Feature description"){ nil }
+    mock(@client).create_pull_request("flaviogranero/invalid_repo", "master", "flavio.00001.new_feature", "[#00001] New Feature", "Feature description"){ nil }
     proc { 
       @github.create_pull_request(
         "flaviogranero/invalid_repo", "flavio.00001.new_feature", story

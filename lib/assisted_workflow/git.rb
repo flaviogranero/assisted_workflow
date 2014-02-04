@@ -8,10 +8,13 @@ module AssistedWorkflow
     
     DESCRIPTION_LIMIT = 30
     
+    def initialize(options = {})
+      @command_options = {:raise_error => true}.merge(options)
+    end
+    
     # creates a new git branch based on story attributes
     # the branch name format is:
     # => story_onwer_username.story_id.story_name
-    
     def create_story_branch(story)
       branch = branch_name(story)
       git "checkout -b #{branch}"
@@ -57,7 +60,7 @@ module AssistedWorkflow
       merged
     end
     
-    # removes current branch and his remote version
+    # removes current branch and its remote version
     def remove_branch
       branch = current_branch
       git "push origin :#{branch}", :raise_error => false
@@ -68,14 +71,22 @@ module AssistedWorkflow
     private
     
     def git(command, options = {})
-      options = {:raise_error => true}.merge(options)
+      options = @command_options.merge(options)
       puts "git #{command}" unless options[:silent] == true
-      result = %x{git #{command}}.chomp
-      if $? != 0 && options[:raise_error]
+      result = system("git #{command}")
+      if system_error? && options[:raise_error]
         msg = ["git command error", options[:error]].compact.join(": ")
         raise GitError, msg
       end
       result
+    end
+    
+    def system(command)
+      %x{command}.chomp
+    end
+    
+    def system_error?
+      $? != 0
     end
     
     def branch_name(story)
