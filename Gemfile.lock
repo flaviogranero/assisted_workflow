@@ -40,6 +40,7 @@ GEM
       nokogiri-happymapper (>= 0.5.4)
       rest-client (~> 1.6.0)
       rest-client (~> 1.6.0)
+    rake (10.1.1)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rr (1.1.2)
@@ -55,4 +56,5 @@ PLATFORMS
 DEPENDENCIES
   assisted_workflow!
   fakefs
+  rake
   rr

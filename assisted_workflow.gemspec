@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.executables   = %w( aw )
   
+  gem.add_development_dependency "rake"
   gem.add_development_dependency "rr"
   gem.add_development_dependency "fakefs"
   
