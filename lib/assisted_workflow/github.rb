@@ -9,7 +9,12 @@ module AssistedWorkflow
       @client = Octokit::Client.new(:access_token => options["token"])
     end
     
-    # creates a pull request using current branch changes
+    # Creates a pull request using current branch changes
+    # 
+    # @param repo [String] Repository name. flaviogranero/assisted_workflow
+    # @param branch [String] Branch name. flavio.0001.new_feature
+    # @param story [Story] Pivotal story object
+    # @return [Sawyer::Resource] The newly created pull request
     def create_pull_request(repo, branch, story)
       base = "master"
       title = "[##{story.id}] #{story.name}"
@@ -19,6 +24,10 @@ module AssistedWorkflow
       else
         pull_request
       end
+    end
+    
+    def valid?
+      @client.user_authenticated?
     end
     
     private

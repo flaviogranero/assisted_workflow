@@ -92,7 +92,6 @@ describe AssistedWorkflow::Pivotal do
   
   private #===================================================================
   
-  
   def story_stub(attributes = {})
     story = PivotalTracker::Story.new(attributes)
     stub(story).update do |attrs|
