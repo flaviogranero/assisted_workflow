@@ -34,24 +34,53 @@ Or install it yourself as:
     
 ## Initial Setup
 
-TODO: Write initial setup instructions here
+`assisted_worflow` uses `.awconfig` files to store your credentials and settings. When running the `setup` command, it will create a global config  file placed in your home folder, and one config file specific for a project, inside the project folder. In order to start using it, go to your project folder and run:
+
+    $ aw setup
+    
+You need to run this command for all projects you want to use `assisted_worflow`.
+
+If this is your initial setup, you need to inform your pivotal and github keys to allow api access. Do this using the config command:
+
+    $ aw config pivotal.fullname='Flavio Granero' --global
+    $ aw config pivotal.username='flavio' --global
+    $ aw config pivotal.token=MYPIVOTALTOKEN --global
+    $ aw config github.token=MYGITHUBOAUTHTOKEN --global
+    
+Note we're using the --global flag, to store this info in the global config file, valid for all projects. You can get your pivotal Api Token in your [profile page](https://www.pivotaltracker.com/profile) and the github api key [following the instructions to generate an oauth token](https://help.github.com/articles/creating-an-access-token-for-command-line-use).
+
+After the global setup, you need to inform the pivotal project_id, storing it in the project .awconfig file:
+
+    $ aw config pivotal.project_id=00001
+
+You may want to store the local .awconfig file into the project repository, preventing other users to run this setup step for every project.
 
 ## Usage
 
-TODO: Write usage instructions here
+Having the setup step done, you are able to use the following commands to automate your workflow:
+
+* __$ aw start__
+
+ List your next 5 pending stories in pivotal, showing a table with each story id, estimate and title. In order to include the already started stories in the list, run it with the `-a` flag.
+ 
+* __$ aw start STORY_ID__
+
+ Find and mark a pivotal story as `started`, moving to a new git branch named with your pivotal username, story id and title. If the story is not estimated yet, you'll see an error message. You can set the estimate before starting it using the option `-e 3`, for instance.
+
+* __$ aw submit__
+
+ Submit the current story branch, creating a new github pull request. Once you're done with the story changes and everything is commited, run submit command to rebase the feature branch with master and submit it, creating a new pull request. The pull request url will be added as a note in the pivotal story, marking it as `finished`.
+ 
+* __$ aw finish__
+
+ Run finish command from a feature branch to check if the pull request has been merged into master, and to remove the local and remote branches safety.
+ 
+There are shortcuts for these 3 main commands. Use __$ aw s__ to start, __$ aw u__ to submit and __$ aw f__ to finish a story.
 
 ##Requirements
 
-`aw` assumes you're using an 'origin' remote.  If you are not,
+`assisted_workflow` assumes you're using an 'origin' remote. If you are not,
 either add an 'origin' remote that points to the GitHub repository you want to submit pull requests.
-
-##Private repositories
-
-To submit pull requests for your private repositories you have set up your `aw` config for github
-
-    $ aw config github.token=your_githubtoken123456789 --global
-
-You must generate your OAuth token for command line use, see how to [generate oauth token](https://help.github.com/articles/creating-an-oauth-token-for-command-line-use).
 
 ## Contributing
 
@@ -63,12 +92,5 @@ You must generate your OAuth token for command line use, see how to [generate oa
 
 ## To-do
 
-1. test coverage, travis-ci and codeclimate setup.
-2. add github issues support
-3. allow individual add-ons tasks like pivotal:start, github:submit, freckle:log
-
-#### Inspiration
-
-1. https://github.com/ddollar/foreman
-2. https://github.com/github/hub
-3. https://github.com/schacon/git-pulls
+1. add github issues support
+2. refactor addons to a base class, with access to a shell output wrapper.

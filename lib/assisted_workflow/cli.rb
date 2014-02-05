@@ -107,6 +107,12 @@ class AssistedWorkflow::CLI < Thor
     end
   end
   
+  desc "thanks", "Aw, Thanks!", :hide => true
+  def thanks
+    say "you're welcome!", :on_magenta
+  end
+  
+  
   no_tasks do
     def pivotal
       @pivotal ||= AssistedWorkflow::Pivotal.new(configuration[:pivotal])
