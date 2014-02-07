@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'assisted_workflow/git'
+require 'assisted_workflow/addons/git'
 
-describe AssistedWorkflow::Git do
+describe AssistedWorkflow::Addons::Git do
   before do
-    @git = AssistedWorkflow::Git.new(:silent => true)
+    @git = AssistedWorkflow::Addons::Git.new(:silent => true)
     stub(@git).system_error?{ false }
     stub(@git).system("git rev-parse --abbrev-ref HEAD"){ "flavio.00001.new_feature"}
   end
@@ -16,7 +16,7 @@ describe AssistedWorkflow::Git do
   it "raises a git error when git command does not exit with success" do
     mock(@git).system_error?{ true }
     mock(@git).system("git checkout -b flavio.00001.new_feature")
-    proc { @git.create_story_branch(story) }.must_raise AssistedWorkflow::GitError, "git command error"
+    proc { @git.create_story_branch(story) }.must_raise AssistedWorkflow::Addons::GitError, "git command error"
   end
   
   

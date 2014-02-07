@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'assisted_workflow/github'
+require 'assisted_workflow/addons/github'
 
-describe AssistedWorkflow::Github do
+describe AssistedWorkflow::Addons::Github do
   before do
     @configuration = {
       "token" => "mygithubtoken",
@@ -11,7 +11,7 @@ describe AssistedWorkflow::Github do
     stub(@client).user_authenticated?{ true }
     stub(Octokit::Client).new{ @client }
     
-    @github = AssistedWorkflow::Github.new(@configuration)
+    @github = AssistedWorkflow::Addons::Github.new(@configuration)
   end
   
   it "initializes a valid github wrapper" do
@@ -20,7 +20,7 @@ describe AssistedWorkflow::Github do
   
   it "requires token" do
     proc { 
-      AssistedWorkflow::Github.new({})
+      AssistedWorkflow::Addons::Github.new({})
     }.must_raise AssistedWorkflow::Error, "github missing configuration:[token]"
   end
   

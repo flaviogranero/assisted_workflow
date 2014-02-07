@@ -1,12 +1,14 @@
 require "assisted_workflow/exceptions"
+require "assisted_workflow/addons/base"
 require 'pivotal_tracker'
 
 # wrapper class to pivotal api client
-module AssistedWorkflow
-  class Pivotal
+module AssistedWorkflow::Addons
+  class Pivotal < Base
+    required_options :fullname, :token, :project_id
   
-    def initialize(options)
-      validate_options!(options)
+    def initialize(options = {})
+      super
 
       PivotalTracker::Client.token = options["token"]
       begin
@@ -48,17 +50,6 @@ module AssistedWorkflow
     end
   
     private
-  
-    def validate_options!(options)
-      if options.nil? || options.empty?
-        raise AssistedWorkflow::Error, "pivotal missing configuration"
-      end
-      required_keys = %w(fullname token project_id)
-      missing_keys = required_keys - options.keys
-      if missing_keys.size > 0
-        raise AssistedWorkflow::Error, "pivotal missing configuration: #{missing_keys.inspect}"
-      end
-    end
   
     def finished_state(story)
       if story.story_type == "chore"

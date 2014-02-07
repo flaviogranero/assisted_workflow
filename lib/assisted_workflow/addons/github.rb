@@ -1,11 +1,14 @@
 require "assisted_workflow/exceptions"
+require "assisted_workflow/addons/base"
 require "octokit"
 
-module AssistedWorkflow
+module AssistedWorkflow::Addons
   
-  class Github
-    def initialize(options)
-      validate_options!(options)
+  class Github < Base
+    required_options :token
+    
+    def initialize(options = {})
+      super
       @client = Octokit::Client.new(:access_token => options["token"])
     end
     
@@ -28,19 +31,6 @@ module AssistedWorkflow
     
     def valid?
       @client.user_authenticated?
-    end
-    
-    private
-    
-    def validate_options!(options)
-      if options.nil? || options.empty?
-        raise AssistedWorkflow::Error, "github missing configuration"
-      end
-      required_keys = %w(token)
-      missing_keys = required_keys - options.keys
-      if missing_keys.size > 0
-        raise AssistedWorkflow::Error, "github missing configuration: #{missing_keys.inspect}"
-      end
     end
   end
 end

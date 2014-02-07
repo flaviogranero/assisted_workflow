@@ -1,14 +1,16 @@
 require "assisted_workflow/exceptions"
+require "assisted_workflow/addons/base"
 
-module AssistedWorkflow
+module AssistedWorkflow::Addons
   
-  class GitError < Error; end
+  class GitError < AssistedWorkflow::Error; end
   
-  class Git
+  class Git < Base
     
     DESCRIPTION_LIMIT = 30
     
     def initialize(options = {})
+      super
       @command_options = {:raise_error => true}.merge(options)
     end
     
@@ -68,7 +70,7 @@ module AssistedWorkflow
       git "branch -D #{branch}"
     end
     
-    private
+    private #=================================================================
     
     def git(command, options = {})
       options = @command_options.merge(options)
