@@ -82,7 +82,7 @@ module AssistedWorkflow
     end
     
     def system(command)
-      %x{command}.chomp
+      %x{#{command}}.chomp
     end
     
     def system_error?
