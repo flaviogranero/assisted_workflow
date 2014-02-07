@@ -7,7 +7,7 @@ module AssistedWorkflow::Addons
   class Github < Base
     required_options :token
     
-    def initialize(options = {})
+    def initialize(output, options = {})
       super
       @client = Octokit::Client.new(:access_token => options["token"])
     end

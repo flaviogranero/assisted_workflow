@@ -9,7 +9,7 @@ module AssistedWorkflow::Addons
     
     DESCRIPTION_LIMIT = 30
     
-    def initialize(options = {})
+    def initialize(output, options = {})
       super
       @command_options = {:raise_error => true}.merge(options)
     end
@@ -18,6 +18,7 @@ module AssistedWorkflow::Addons
     # the branch name format is:
     # => story_onwer_username.story_id.story_name
     def create_story_branch(story)
+      log "creating the feature branch"
       branch = branch_name(story)
       git "checkout -b #{branch}"
       # git "push --set-upstream origin #{branch}"

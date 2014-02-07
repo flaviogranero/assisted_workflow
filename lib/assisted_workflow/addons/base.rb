@@ -1,7 +1,9 @@
 module AssistedWorkflow::Addons
   
   class Base
-    def initialize(options = {})
+    
+    def initialize(output, options = {})
+      @output = output
       validate_options!(options)
     end
     
@@ -26,8 +28,12 @@ module AssistedWorkflow::Addons
     
     protected #===============================================================
     
+    def log(message)
+      @output.say_status(name, message) if @output
+    end
+    
     def validate_options!(options)
-      if options.nil? || options.empty?
+      if options.nil?
         raise AssistedWorkflow::Error, "#{name} missing configuration"
       end
       missing_keys = self.class.get_required_options - options.keys

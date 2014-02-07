@@ -3,6 +3,7 @@ require "assisted_workflow/exceptions"
 
 module AssistedWorkflow
   autoload :ConfigFile, "assisted_workflow/config_file"
+  autoload :Output, "assisted_workflow/output"
   
   module Addons
     autoload :Pivotal,    "assisted_workflow/addons/pivotal"

@@ -39,18 +39,13 @@ module AssistedWorkflow
       story = pivotal.find_story(story_id)
       if story.nil?
         stories = pivotal.pending_stories(:include_started => options[:all])
-        print_title "pending stories"
-        print_stories(stories)
-        say "start a story using:", :green
-        say_command "$ aw start [STORY_ID]"
+        out.print_stories "pending stories", stories, options
+        out.next_command "start a story using:", "$ aw start [STORY_ID]"
       else
-        say_status "starting story", story.name
         pivotal.start_story(story, :estimate => options[:estimate])
-        print_wrapped story.description, :indent => 2
-        say "creating the feature branch"
+        out.print_story story
         git.create_story_branch(story)
-        say "after commiting your changes, submit a pull request using:", :green
-        say_command "$ aw submit"
+        out.next_command "after commiting your changes, submit a pull request using:", "$ aw submit"
       end
     end
   
@@ -115,16 +110,20 @@ module AssistedWorkflow
   
   
     no_tasks do
+      def out
+        @out ||= Output.new(self.shell)
+      end
+      
       def pivotal
-        @pivotal ||= Addons::Pivotal.new(configuration[:pivotal])
+        @pivotal ||= Addons::Pivotal.new(out, configuration[:pivotal])
       end
     
       def git
-        @git ||= Addons::Git.new
+        @git ||= Addons::Git.new(out)
       end
     
       def github
-        @github ||= Addons::Github.new(configuration[:github])
+        @github ||= Addons::Github.new(out, configuration[:github])
       end
     
       def config_file
@@ -156,23 +155,6 @@ module AssistedWorkflow
         say "-" * title.length, :green
         say title.upcase, :green
         say "-" * title.length, :green
-      end
-    
-      def print_stories(stories)
-        rows = stories.map do |story|
-          if options[:all]
-            [story.id, story.current_state, story.name]
-          else
-            [story.id, story.estimate, story.name]
-          end
-        end
-        print_table(rows)
-      end
-    
-      def say_command(command)
-        with_padding do
-          say command
-        end
       end
     
       def check_awfile!

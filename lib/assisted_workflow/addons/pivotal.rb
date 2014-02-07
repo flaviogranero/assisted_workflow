@@ -7,7 +7,7 @@ module AssistedWorkflow::Addons
   class Pivotal < Base
     required_options :fullname, :token, :project_id
   
-    def initialize(options = {})
+    def initialize(output, options = {})
       super
 
       PivotalTracker::Client.token = options["token"]
@@ -22,6 +22,7 @@ module AssistedWorkflow::Addons
   
     def find_story(story_id)
       if story_id.to_i > 0
+        log "finding story ##{story_id}"
         story = @project.stories.find(story_id)
         story.other_id = @username || @fullname
         story.other_id = story.other_id.to_s.downcase.split.join
@@ -30,6 +31,7 @@ module AssistedWorkflow::Addons
     end
   
     def start_story(story, options = {})
+      log "starting story ##{story.id}"
       update_story! story, options.merge(:current_state => "started")
     end
   
