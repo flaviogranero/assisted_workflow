@@ -78,7 +78,7 @@ module AssistedWorkflow
     
     def git(command, options = {})
       options = @command_options.merge(options)
-      puts "git #{command}" unless options[:silent] == true
+      # log("git #{command}", :step => true) unless options[:silent] == true
       result = system("git #{command}")
       if system_error? && options[:raise_error]
         msg = ["git command error", options[:error]].compact.join(": ")

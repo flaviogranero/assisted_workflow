@@ -97,7 +97,7 @@ module AssistedWorkflow
   
     desc "thanks", "Aw, Thanks!", :hide => true
     def thanks
-      say "you're welcome!", :on_magenta
+      out.say "you're welcome!", :on_magenta
     end
   
   
