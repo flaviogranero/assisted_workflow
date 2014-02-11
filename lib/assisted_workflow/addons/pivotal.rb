@@ -22,7 +22,7 @@ module AssistedWorkflow::Addons
   
     def find_story(story_id)
       if story_id.to_i > 0
-        log "finding story ##{story_id}"
+        log "loading story ##{story_id}"
         story = @project.stories.find(story_id)
         story.other_id = @username || @fullname
         story.other_id = story.other_id.to_s.downcase.split.join
@@ -36,12 +36,14 @@ module AssistedWorkflow::Addons
     end
   
     def finish_story(story, options = {})
+      log "finishing story ##{story.id}"
       if update_story! story, :current_state => finished_state(story)
         story.notes.create(:text => options[:note]) if options[:note]
       end
     end
   
     def pending_stories(options = {})
+      log "loading pending stories"
       states = ["unstarted"]
       states << "started" if options[:include_started]
       @project.stories.all(:state => states, :owned_by => @fullname, :limit => 5)

@@ -14,7 +14,7 @@ describe AssistedWorkflow::Addons::Pivotal do
     @project = PivotalTracker::Project.new(:id => "1")
     stub(PivotalTracker::Project).find(@configuration["project_id"]){ @project }
     
-    @pivotal = AssistedWorkflow::Addons::Pivotal.new(@configuration)
+    @pivotal = AssistedWorkflow::Addons::Pivotal.new(nil, @configuration)
   end
   
   it "initializes a valid pivotal wrapper" do
@@ -24,6 +24,7 @@ describe AssistedWorkflow::Addons::Pivotal do
   it "requires fullname" do
     proc { 
       AssistedWorkflow::Addons::Pivotal.new(
+        nil,
         @configuration.reject{|k,v| k == "fullname"}
       )
     }.must_raise AssistedWorkflow::Error, "pivotal missing configuration:[fullname]"
@@ -32,6 +33,7 @@ describe AssistedWorkflow::Addons::Pivotal do
   it "requires token" do
     proc {
       AssistedWorkflow::Addons::Pivotal.new(
+        nil,
         @configuration.reject{|k,v| k == "token"}
       )
     }.must_raise AssistedWorkflow::Error, "pivotal missing configuration:[token]"
@@ -40,6 +42,7 @@ describe AssistedWorkflow::Addons::Pivotal do
   it "requires project_id" do
     proc { 
       AssistedWorkflow::Addons::Pivotal.new(
+        nil,
         @configuration.reject{|k,v| k == "project_id"}
       )
     }.must_raise AssistedWorkflow::Error, "pivotal missing configuration:[project_id]"

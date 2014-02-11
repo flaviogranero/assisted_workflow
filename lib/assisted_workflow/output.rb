@@ -7,12 +7,14 @@ module AssistedWorkflow
       @shell = shell
     end
     
+    # prints a highlighted title section
     def print_title(title)
       say "-" * title.length, :green
       say title.upcase, :green
       say "-" * title.length, :green
     end
     
+    # prints as table with stories data
     def print_stories(title, stories, options = {})
       print_title title
       rows = stories.map do |story|
@@ -30,9 +32,13 @@ module AssistedWorkflow
       print_wrapped story.description, :indent => 2
     end
     
-    def next_command(title, command)
+    def next_command(title, commands, &block)
       say title, :green
-      print_wrapped command, :indent => 2
+      _commands = Array(commands)
+      yield(_commands) if block_given?
+      _commands.each do |command|
+        print_wrapped command, :indent => 2
+      end
     end
     
   end

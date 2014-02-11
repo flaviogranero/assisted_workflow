@@ -24,11 +24,12 @@ module AssistedWorkflow
       else
         raise AssistedWorkflow::Error, ".git folder not found"
       end
-      say "set your own configuration editing the .awconfig files or running:", :green
-      say_command "$ aw config pivotal.fullname='Flavio Granero' --global"
-      say_command "$ aw config pivotal.token=MYPIVOTALTOKEN --global"
-      say_command "$ aw config github.token=MYGITHUBOAUTHTOKEN --global"
-      say_command "$ aw config pivotal.project_id=00001"
+      out.next_command "set your own configuration running:", "" do |c|
+        c << "$ aw config pivotal.fullname='Your Pivotal User Name' --global"
+        c << "$ aw config pivotal.token=MYPIVOTALTOKEN --global"
+        c << "$ aw config github.token=MYGITHUBOAUTHTOKEN --global"
+        c << "$ aw config pivotal.project_id=00001"
+      end
     end
   
     desc "start [STORY_ID]", "Start the pivotal story and create a new branch to receive the changes"
@@ -53,18 +54,14 @@ module AssistedWorkflow
     def submit
       check_awfile!
       story_id = git.current_story_id
-      say "loading story info"
       story = pivotal.find_story(story_id)
       if story
-        say "preparing local branch"
         git.rebase_and_push
-        say "submiting the new pull request"
-        pr = github.create_pull_request(git.repository, git.current_branch, story)
-        say "finishing the story"
-        pivotal.finish_story(story, :note => pr._links.html.href)
-        say "new pull request: #{pr._links.html.href}", :yellow
-        say "after pull request approval, remove the feature branch using:", :green
-        say_command "$ aw finish"
+        pr_url = github.create_pull_request(
+          git.repository, git.current_branch, story
+        )
+        pivotal.finish_story(story, :note => pr_url)
+        out.next_command "after pull request approval, remove the feature branch using:", "$ aw finish"
       else
         raise AssistedWorkflow::Error, "story not found, make sure a feature branch in active"
       end
@@ -75,14 +72,9 @@ module AssistedWorkflow
       check_awfile!
       story_id = git.current_story_id
       if story_id.to_i > 0
-        if git.is_merged?
-          say "removing local and remote feature branches"
-          git.remove_branch
-          say "well done! check your next stories using:", :green
-          say_command "$ aw start"
-        else
-          say "this branch is not merged into master yet", :yellow
-        end
+        git.check_merged!
+        git.remove_branch
+        out.next_command "well done! check your next stories using:", "$ aw start"
       else
         raise AssistedWorkflow::Error, "story not found, make sure a feature branch in active"
       end
@@ -149,14 +141,8 @@ module AssistedWorkflow
       end
     end
   
-    private ######################################################################
+    private ##################################################################
   
-      def print_title(title)
-        say "-" * title.length, :green
-        say title.upcase, :green
-        say "-" * title.length, :green
-      end
-    
       def check_awfile!
         raise AssistedWorkflow::Error, "#{awfile} does not exist.\nmake sure you run `$ aw setup` in your project folder." unless File.exist?(awfile)
       end

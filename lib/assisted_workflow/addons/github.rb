@@ -19,13 +19,16 @@ module AssistedWorkflow::Addons
     # @param story [Story] Pivotal story object
     # @return [Sawyer::Resource] The newly created pull request
     def create_pull_request(repo, branch, story)
+      log "submiting the new pull request"
       base = "master"
       title = "[##{story.id}] #{story.name}"
       pull_request = @client.create_pull_request(repo, base, branch, title, story.description)
       if pull_request.nil?
         raise AssistedWorkflow::Error, "error on submiting the pull request"
       else
-        pull_request
+        url = pull_request._links.html.href
+        log "new pull request at #{url}"
+        url
       end
     end
     

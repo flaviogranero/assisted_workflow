@@ -3,7 +3,7 @@ require 'assisted_workflow/addons/git'
 
 describe AssistedWorkflow::Addons::Git do
   before do
-    @git = AssistedWorkflow::Addons::Git.new(:silent => true)
+    @git = AssistedWorkflow::Addons::Git.new(nil, :silent => true)
     stub(@git).system_error?{ false }
     stub(@git).system("git rev-parse --abbrev-ref HEAD"){ "flavio.00001.new_feature"}
   end
