@@ -50,7 +50,7 @@ describe AssistedWorkflow::Addons::Git do
     @git.repository.must_equal "flaviogranero/assisted_workflow"
   end
   
-  describe "#is_merged?" do
+  describe "#check_merged!" do
     
     before do
       mock(@git).system("git status --porcelain"){ "" }
@@ -61,12 +61,13 @@ describe AssistedWorkflow::Addons::Git do
     
     it "returns true if current branch is merged into master" do
       mock(@git).system("git branch --merged"){ "flavio.00001.new_feature" }
-      @git.is_merged?.must_equal true
+      @git.check_merged!.must_equal true
     end
     
     it "returns false if current branch is not merged into master" do
       mock(@git).system("git branch --merged"){ "flavio.00002.other_feature" }
-      @git.is_merged?.must_equal false
+      proc { @git.check_merged! }.must_raise AssistedWorkflow::Error, "this branch is not merged into master"
+      
     end
   end
   

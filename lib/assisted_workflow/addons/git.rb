@@ -26,6 +26,7 @@ module AssistedWorkflow::Addons
     
     # run all the git steps required for a clean pull request
     def rebase_and_push
+      log "preparing local branch"
       check_everything_commited!
       branch = current_branch
       git "checkout master"
@@ -53,18 +54,22 @@ module AssistedWorkflow::Addons
     end
     
     # check if current branch is merged into master
-    def is_merged?
+    def check_merged!
       check_everything_commited!
       branch = current_branch
       git "checkout master"
       git "pull --rebase"
       merged = git("branch --merged").include?(branch)
       git "checkout #{branch}"
+      unless merged
+        raise AssistedWorkflow::Error, "this branch is not merged into master"
+      end
       merged
     end
     
     # removes current branch and its remote version
     def remove_branch
+      log "removing local and remote feature branches"
       branch = current_branch
       git "push origin :#{branch}", :raise_error => false
       git "checkout master"
