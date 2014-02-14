@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    assisted_workflow (0.2.0)
+    assisted_workflow (0.2.1)
       hashie (~> 2.0.5)
       octokit (~> 2.0)
       pivotal-tracker (~> 0.5.12)
