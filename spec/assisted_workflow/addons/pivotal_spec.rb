@@ -17,7 +17,7 @@ describe AssistedWorkflow::Addons::Pivotal do
     @pivotal = AssistedWorkflow::Addons::Pivotal.new(nil, @configuration)
   end
   
-  it "initializes a valid pivotal wrapper" do
+  it "initializes a valid pivotal addon" do
     assert @pivotal.valid?
   end
   
@@ -87,10 +87,6 @@ describe AssistedWorkflow::Addons::Pivotal do
     @pivotal.finish_story(story, :note => "pull_request_url")
     story.current_state.must_match /finished/
     story.errors.must_be_empty
-  end
-  
-  it "returns arrays to be printed" do
-    
   end
   
   private #===================================================================

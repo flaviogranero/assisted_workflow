@@ -7,6 +7,7 @@ module AssistedWorkflow
   
   module Addons
     autoload :Pivotal,    "assisted_workflow/addons/pivotal"
+    autoload :Jira,    "assisted_workflow/addons/jira"
     autoload :Git,        "assisted_workflow/addons/git"
     autoload :Github,     "assisted_workflow/addons/github"
   end
