@@ -37,13 +37,13 @@ module AssistedWorkflow
     method_option :estimate, :type => :numeric, :aliases => "-e", :desc => "Sets the story estimate when starting"
     def start(story_id=nil)
       check_awfile!
-      story = pivotal.find_story(story_id)
+      story = tracker.find_story(story_id)
       if story.nil?
-        stories = pivotal.pending_stories(:include_started => options[:all])
+        stories = tracker.pending_stories(:include_started => options[:all])
         out.print_stories "pending stories", stories, options
         out.next_command "start a story using:", "$ aw start [STORY_ID]"
       else
-        pivotal.start_story(story, :estimate => options[:estimate])
+        tracker.start_story(story, :estimate => options[:estimate])
         out.print_story story
         git.create_story_branch(story)
         out.next_command "after commiting your changes, submit a pull request using:", "$ aw submit"
@@ -54,13 +54,13 @@ module AssistedWorkflow
     def submit
       check_awfile!
       story_id = git.current_story_id
-      story = pivotal.find_story(story_id)
+      story = tracker.find_story(story_id)
       if story
         git.rebase_and_push
         pr_url = github.create_pull_request(
           git.repository, git.current_branch, story
         )
-        pivotal.finish_story(story, :note => pr_url)
+        tracker.finish_story(story, :note => pr_url)
         out.next_command "after pull request approval, remove the feature branch using:", "$ aw finish"
       else
         raise AssistedWorkflow::Error, "story not found, make sure a feature branch in active"
@@ -106,10 +106,17 @@ module AssistedWorkflow
         @out ||= Output.new(self.shell)
       end
       
-      def pivotal
-        @pivotal ||= Addons::Pivotal.new(out, configuration[:pivotal])
+      def tracker
+        unless @tracker
+          if configuration[:jira] && configuration[:jira].has_key?(:project)
+            @tracker = Addons::Jira.new(out, configuration[:jira])
+          else
+            @tracker = Addons::Pivotal.new(out, configuration[:pivotal])
+          end
+        end
+        @tracker
       end
-    
+      
       def git
         @git ||= Addons::Git.new(out)
       end
