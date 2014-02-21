@@ -7,7 +7,11 @@ describe AssistedWorkflow::Addons::Jira do
     @configuration = {
       "username" => "jirauser",
       "password" => "jirapass",
-      "uri" => "aw.atlassian.net"
+      "uri" => "aw.atlassian.net",
+      "project" => "AW",
+      "unstarted" => "Backlog",
+      "started" => "Started",
+      "finished" => "Finished"
     }
     @jira = AssistedWorkflow::Addons::Jira.new(nil, @configuration)
   end
@@ -43,61 +47,91 @@ describe AssistedWorkflow::Addons::Jira do
     }.must_raise AssistedWorkflow::Error, "jira missing configuration:[url]"
   end
   
+  it "requires project" do
+    proc { 
+      AssistedWorkflow::Addons::Jira.new(
+        nil,
+        @configuration.reject{|k,v| k == "project"}
+      )
+    }.must_raise AssistedWorkflow::Error, "jira missing configuration:[project]"
+  end
+  
+  it "requires statuses configuration" do
+    ["unstarted", "started", "finished"].each do |status|
+      proc { 
+        AssistedWorkflow::Addons::Jira.new(
+          nil,
+          @configuration.reject{|k,v| k == status}
+        )
+      }.must_raise AssistedWorkflow::Error, "jira missing configuration:[#{status}]"
+    end
+  end
   
   it "finds a story by id" do
-    mock(Jiralicious::Issue).find("web-1") do |story_id|
-      story_stub(:id => story_id)
+    mock(Jiralicious::Issue).find("aw-01") do |story_id|
+      story_stub(:jira_key => story_id)
     end
     
-    story = @jira.find_story("web-01")
-    story.id.must_equal "web-01"
-    # story.other_id.must_match /flavio/
+    story = @jira.find_story("aw-01")
+    story.id.must_equal "aw-01"
+    story.other_id.must_match /jirauser/
   end
-  # 
-  # it "returns pending stories" do
-  #   mock(jiraTracker::Story).all(@project, :state => ["unstarted", "started"], :owned_by => @configuration["fullname"], :limit => 5) do |project|
-  #     [
-  #       story_stub(:id => "100001", :project_id => project.id),
-  #       story_stub(:id => "100002", :project_id => project.id)
-  #     ]
-  #   end
-  #   
-  #   stories = @jira.pending_stories(:include_started => true)
-  #   stories.size.must_equal 2
-  # end
-  # 
-  # it "starts a story" do
-  #   story = story_stub(:id => "100001", :project_id => @project.id)
-  #   @jira.start_story(story, :estimate => "3")
-  #   story.current_state.must_match /started/
-  #   story.estimate.must_equal "3"
-  #   story.errors.must_be_empty
-  # end
-  # 
-  # it "finishes a story" do
-  #   story = story_stub(:id => "100001", :project_id => @project.id)
-  #   any_instance_of(jiraTracker::Note) do |klass|
-  #     stub(klass).create{ true }
-  #   end
-  #   
-  #   @jira.finish_story(story, :note => "pull_request_url")
-  #   story.current_state.must_match /finished/
-  #   story.errors.must_be_empty
-  # end
-  # 
-  # it "returns arrays to be printed" do
-  #   
-  # end
+  
+  it "returns pending stories" do
+    query = "project=AW and assignee='jirauser' and status in ('Backlog','Started')"
+    mock(Jiralicious).search(query, :max_results => 5){ search_results_stub }
+    
+    stories = @jira.pending_stories(:include_started => true)
+    stories.size.must_equal 2
+  end
+  
+  it "starts a story" do
+    story = story_stub(:jira_key => "aw-01")
+    mock_transition(story.id, "2")
+    @jira.start_story(story)
+  end
+  
+  it "finishes a story" do
+    story = story_stub(:id => "aw-01")
+    any_instance_of(Jiralicious::Issue::Comment) do |klass|
+      stub(klass).add("pull_request_url"){ true }
+    end
+    mock_transition(story.id, "3")
+    assert @jira.finish_story(story, :note => "pull_request_url")
+  end
   
   private #===================================================================
   
   def story_stub(attributes = {})
-    story = Jiralicious::Issue.new(attributes)
-    # stub(story).update do |attrs|
-    #   story.send(:update_attributes, attrs)
-    #   story
-    # end
+    stub(Jiralicious::Issue::Comment).find_by_key{ Jiralicious::Issue::Comment.new }
+    stub(Jiralicious::Issue::Watchers).find_by_key{ nil }
     
-    story
+    default = {
+      "fields" => {"assignee" => {"name" => "jirauser"}}
+    }
+    Jiralicious::Issue.new(default.merge(attributes))
+  end
+  
+  def search_results_stub
+    search_data = {
+      "issues" => [story_stub(:jira_key => "aw-01"), story_stub(:jira_key => "aw-02")],
+      "offset" => 0,
+      "num_results" => 2
+    }
+    Jiralicious::SearchResult.new(search_data)
+  end
+  
+  def mock_transition(story_id, status_id)
+    url = "#{Jiralicious.rest_path}/issue/#{story_id}/transitions"
+    response = Object.new
+    stub(response).parsed_response do
+      {"transitions" => [
+        {"id" => "1", "name" => "Backlog"},
+        {"id" => "2", "name" => "Started"},
+        {"id" => "3", "name" => "Finished"},
+      ]}
+    end
+    mock(Jiralicious::Issue).get_transitions(url){ response }
+    mock(Jiralicious::Issue).transition(url, {"transition" => status_id})
   end
 end

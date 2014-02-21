@@ -4,6 +4,8 @@ require 'jiralicious'
 
 # wrapper class to pivotal api client
 module AssistedWorkflow::Addons
+  
+  # adapter class to map jira issue attributes for the required interface
   class JiraStory < SimpleDelegator
     
     def initialize(issue)
@@ -37,7 +39,6 @@ module AssistedWorkflow::Addons
   
     def initialize(output, options = {})
       super
-
       Jiralicious.configure do |config|
         config.username = options["username"]
         config.password = options["password"]
@@ -94,15 +95,11 @@ module AssistedWorkflow::Addons
     private
   
     def move_story!(story, status)
-      transitions = Jiralicious::Issue.get_transitions(
-        "#{Jiralicious.rest_path}/issue/#{story.id}/transitions"
-      )
+      url = "#{Jiralicious.rest_path}/issue/#{story.id}/transitions"
+      transitions = Jiralicious::Issue.get_transitions(url)
       transition = transitions.parsed_response["transitions"].find{|t| t["name"] == status}
       if transition
-        Jiralicious::Issue.transition(
-          "#{Jiralicious.rest_path}/issue/#{story.id}/transitions", 
-          {"transition" => transition["id"]}
-        )
+        Jiralicious::Issue.transition(url, {"transition" => transition["id"]})
       else
         raise AssistedWorkflow::Error, "cannot find a valid transation to move the story to #{status}"
       end
