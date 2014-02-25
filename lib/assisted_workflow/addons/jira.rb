@@ -58,15 +58,12 @@ module AssistedWorkflow::Addons
         log "loading story ##{story_id}"
         issue = Jiralicious::Issue.find(story_id)
         story = JiraStory.new(issue) if issue
-        # story.other_id = @username || @fullname
-#         story.other_id = story.other_id.to_s.downcase.split.join
         story
       end
     end
   
     def start_story(story, options = {})
       log "starting story ##{story.id}"
-      # load allowed transitions
       move_story! story, @started
     end
   
