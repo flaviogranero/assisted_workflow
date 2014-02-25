@@ -58,9 +58,7 @@ module AssistedWorkflow
         raise AssistedWorkflow::Error, "story not found, make sure a feature branch in active"
       end
       git.rebase_and_push
-      pr_url = github.create_pull_request(
-        git.repository, git.current_branch, story
-      )
+      pr_url = github.create_pull_request(git.current_branch, story)
       tracker.finish_story(story, :note => pr_url)
       out.next_command "after pull request approval, remove the feature branch using:", "$ aw finish"
     end
@@ -103,14 +101,7 @@ module AssistedWorkflow
       end
       
       def tracker
-        unless @tracker
-          if configuration[:jira] && configuration[:jira].has_key?(:project)
-            @tracker = Addons::Jira.new(out, configuration[:jira])
-          else
-            @tracker = Addons::Pivotal.new(out, configuration[:pivotal])
-          end
-        end
-        @tracker
+        @tracker ||= Addons.load_tracker(out, configuration) || github
       end
       
       def git
@@ -118,7 +109,9 @@ module AssistedWorkflow
       end
     
       def github
-        @github ||= Addons::Github.new(out, configuration[:github])
+        @github ||= Addons::Github.new(out, 
+          {"repository" => git.repository}.merge(configuration[:github])
+        )
       end
     
       def config_file
