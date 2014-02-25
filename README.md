@@ -8,10 +8,10 @@ AW is a CLI tool to automate software development workflows based on github pull
 
 Here in [Inaka](http://inaka.net) we have the following workflow steps:
 
-1. Start a pivotal task, moving to a new git branch for the new feature/bug fix
+1. Start a pivotal/jira/github story, moving to a new git branch for the new feature/bug fix
 2. Commit the changes, pushing to a new remote branch
 3. Submit a pull-request, allowing other team member to review the code, and merge into master if everything is ok
-4. Finish the pivotal task, removing both local and remote feature branches
+4. Finish the story, removing both local and remote feature branches
 5. Deploy master branch.
 
 For more details, please read more about the [Inaka Workflow](https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow).

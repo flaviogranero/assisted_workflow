@@ -1,7 +1,10 @@
 ### Unreleased
 
+### 0.3.0
+
 * enchancements
-  * Adding `jira` support as a second option for a story tracker
+  * Adding `jira` support to be used as story tracker, replacing pivotal
+  * Adding `github` issues support as another story tracker option
 
 ### 0.2.1
 
