@@ -36,8 +36,8 @@ module AssistedWorkflow
     
     def print_story(story)
       say "-" * 40
-      print_wrapped story.name, :indent => 2
-      print_wrapped story.description, :indent => 2
+      print_wrapped story.name.to_s, :indent => 2
+      print_wrapped story.description.to_s, :indent => 2
       say "-" * 40
     end
     

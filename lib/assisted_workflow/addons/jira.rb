@@ -94,11 +94,11 @@ module AssistedWorkflow::Addons
     def move_story!(story, status)
       url = "#{Jiralicious.rest_path}/issue/#{story.id}/transitions"
       transitions = Jiralicious::Issue.get_transitions(url)
-      transition = transitions.parsed_response["transitions"].find{|t| t["name"] == status}
+      transition = transitions.parsed_response["transitions"].find{|t| t["to"]["name"] == status}
       if transition
         Jiralicious::Issue.transition(url, {"transition" => transition["id"]})
       else
-        raise AssistedWorkflow::Error, "cannot find a valid transation to move the story to #{status}"
+        raise AssistedWorkflow::Error, "cannot find a valid transition to move the story to #{status}"
       end
     end
   end
