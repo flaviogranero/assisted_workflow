@@ -126,9 +126,9 @@ describe AssistedWorkflow::Addons::Jira do
     response = Object.new
     stub(response).parsed_response do
       {"transitions" => [
-        {"id" => "1", "name" => "Backlog"},
-        {"id" => "2", "name" => "Started"},
-        {"id" => "3", "name" => "Finished"},
+        {"id" => "1", "name" => "Next", "to" => {"name" => "Backlog"}},
+        {"id" => "2", "name" => "Start", "to" => {"name" => "Started"}},
+        {"id" => "3", "name" => "Finish", "to" => {"name" => "Finished"}},
       ]}
     end
     mock(Jiralicious::Issue).get_transitions(url){ response }
