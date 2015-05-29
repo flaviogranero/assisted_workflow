@@ -57,7 +57,7 @@ module AssistedWorkflow::Addons
     
     # Creates a pull request using current branch changes
     # 
-    # @param repo [String] Repository name. flaviogranero/assisted_workflow
+    # @param repo [String] Repository name. inaka/assisted_workflow
     # @param branch [String] Branch name. flavio.0001.new_feature
     # @param story [Story] Pivotal story object
     # @return [Sawyer::Resource] The newly created pull request
