@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Flavio Granero"]
   gem.email         = ["maltempe@gmail.com"]
   gem.summary       = %q{AW is a CLI tool to automate software development workflows based on github pull requests}
-  gem.homepage      = "https://github.com/flaviogranero/assisted_workflow"
+  gem.homepage      = "https://github.com/inaka/assisted_workflow"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)

@@ -1,6 +1,6 @@
 # Assisted Workflow (aw)
 
-[![Gem Version](https://badge.fury.io/rb/assisted_workflow.png)](http://badge.fury.io/rb/assisted_workflow) [![Build Status](https://travis-ci.org/flaviogranero/assisted_workflow.png?branch=master)](https://travis-ci.org/flaviogranero/assisted_workflow) [![Code Climate](https://codeclimate.com/github/flaviogranero/assisted_workflow.png)](https://codeclimate.com/github/flaviogranero/assisted_workflow)
+[![Gem Version](https://badge.fury.io/rb/assisted_workflow.png)](http://badge.fury.io/rb/assisted_workflow) [![Build Status](https://travis-ci.org/inaka/assisted_workflow.png?branch=master)](https://travis-ci.org/inaka/assisted_workflow) [![Code Climate](https://codeclimate.com/github/inaka/assisted_workflow.png)](https://codeclimate.com/github/inaka/assisted_workflow)
 
 AW is a CLI tool to automate software development workflows based on github pull requests.
 
@@ -14,9 +14,17 @@ Here in [Inaka](http://inaka.net) we have the following workflow steps:
 4. Finish the story, removing both local and remote feature branches
 5. Deploy master branch.
 
-For more details, please read more about the [Inaka Workflow](https://github.com/inaka/inaka_corp/wiki/Inaka-Workflow).
+For more details, please read more about the [Inaka's Development Workflow](https://github.com/inaka/assisted_workflow/wiki/Inaka's-Development-Flow).
 
 This gem provides a command line tool to automate tasks related with `start`, `submit` and `finish` steps.
+
+## Contact Us
+For **questions** or **general comments** regarding the use of this library, please use our public
+[hipchat room](https://www.hipchat.com/gpBpW3SsT).
+
+If you find any **bugs** or have a **problem** while using this library, please [open an issue](https://github.com/inaka/assisted_workflow/issues/new) in this repo (or a pull request :)).
+
+And you can check all of our open-source projects at [inaka.github.io](http://inaka.github.io)
 
 ## Installation
 
